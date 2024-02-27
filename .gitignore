@@ -5,5 +5,5 @@
 !*.cpp
 !*.hpp
 !.gitignore
-!makefile.all
+!makefile
 !make
