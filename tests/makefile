@@ -25,6 +25,3 @@ vlg1 :
 
 clean1 :
 	rm $(OBJPATH)/$(FILE)_test.o
-
-#ARR := Array Stack
-#files := $(foreach n,$(ARR),$(n).o)
