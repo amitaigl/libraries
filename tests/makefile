@@ -9,9 +9,9 @@ VLG = valgrind --leak-check=yes --track-origins=yes
 
 FILE =
 
-do1 : $(OUTPATH)/$(FILE).out run1
+do : $(OUTPATH)/$(FILE).out run
 
-run1 :
+run :
 	./$(OUTPATH)/$(FILE).out
 
 $(OUTPATH)/$(FILE).out : $(OBJPATH)/$(FILE)_test.o
@@ -20,8 +20,8 @@ $(OUTPATH)/$(FILE).out : $(OBJPATH)/$(FILE)_test.o
 $(OBJPATH)/$(FILE)_test.o : $(TESTPATH)/$(FILE)_test.cpp
 	$(COMPILER) $(FLAGS) $^ -c -o $@
 
-vlg1 :
+vlg :
 	$(VLG) ./$(OUTPATH)/$(FILE).out
 
-clean1 :
+clean :
 	rm $(OBJPATH)/$(FILE)_test.o
