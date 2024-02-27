@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>  // size_t
-#include "../array/Array.hpp"
+#include "../../../code/templates/containers/Array.hpp"
 
 namespace AG
 {

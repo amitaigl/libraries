@@ -1,5 +1,5 @@
-#include "Array.hpp"
-#include "../test_func.hpp"
+#include "../../../code/templates/containers/Array.hpp"
+#include "../../../tests_engine/macros.hpp"
 
 using namespace AG;
 

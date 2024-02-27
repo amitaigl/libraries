@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>  // size_t
-#include "../vector/Vector.hpp"
+#include "../../../code/templates/containers/Vector.hpp"
 
 namespace AG
 {
