@@ -7,7 +7,7 @@ COMPILER = g++ -std=c++11
 FLAGS = -pedantic-errors -Wall -Wextra -g
 VLG = valgrind --leak-check=yes --track-origins=yes
 
-FILE =
+FILE = Array
 
 do : $(OUTPATH)/$(FILE).out run
 
@@ -25,3 +25,8 @@ vlg :
 
 clean :
 	rm $(OBJPATH)/$(FILE)_test.o
+
+# to execute the "do" rule in bash:
+# type "make FILE=<whatever>",
+# or edit the default definition of macro "FILE" in line 10,
+# and than just type "make"

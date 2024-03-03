@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cstddef>  // size_t
+#include <cstddef>                                          // size_t
 #include "../../../code/templates/containers/Vector.hpp"
+#include "../algorithms/IComparator.hpp"
 
 namespace AG
 {
@@ -9,7 +10,7 @@ template <class T>
 class SortedVector : public Vector<T>
 {
 public:
-    SortedVector(size_t capacity = 10, int (*compare)(const void* data, const void* new_data)) : Vector<T>(capacity), m_compare_func(compare) {}
+    SortedVector(size_t capacity = 10, const IComparator<T>& comparator) : Vector<T>(capacity), m_comparator(comparator) {}
     SortedVector(const SortedVector<T>& other) : Vector<T>(other), m_compare_func(other.m_compare_func) {}
     SortedVector<T>& operator=(const SortedVector<T>& other)
     {
@@ -27,7 +28,7 @@ public:
     
 
 private:
-    int (*m_compare_func)(const void* data, const void* new_data); // what if the user switches the order of arguments (new_data is first)?
+    const IComparator<T> m_comparator; // what if the user switches the order of arguments (new_data is first)?
 
     size_t GetIndex(const T& obj)
     {
