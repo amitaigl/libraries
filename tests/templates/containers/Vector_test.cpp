@@ -1,35 +1,46 @@
 #include "../../../code/templates/containers/Vector.hpp"
 #include "../../../tests_engine/macros.hpp"
+#include <iostream>
+#include <vector>
+#include <string>
 
 using namespace AG;
 
-void TestAssignmentOperator();
-void TestIsEmpty();
-void TestGetSize();
-void TestGetCapacity();
-void TestParenthesesOperator();
-void TestParenthesesOperatorConst();
-void TestAt();
-void TestAtConst();
-void TestAdd();
-void TestInsert();
-void TestRemove();
-void TestReserve();
-void TestTruncate();
-void TestShrink();
-void TestClean();
-void TestReset();
-void TestFind();
-void TestIsExists();
+static void TestAssignmentOperator();
+static void TestIsEmpty();
+static void TestGetSize();
+static void TestGetCapacity();
+static void TestParenthesesOperator();
+static void TestParenthesesOperatorConst();
+static void TestAt();
+static void TestAtConst();
+static void TestAdd();
+static void TestInsert();
+static void TestRemoveAt();
+static void TestRemoveObj();
+static void TestDelete();
+static void TestReserve();
+static void TestTruncate();
+static void TestShrink();
+static void TestClean();
+static void TestReset();
+static void TestConstFind();
+static void TestNonConstFind();
+static void TestIsExisting();
 
-typedef struct newType
+struct newType
 {
+    bool operator==(const newType& other) const
+    {
+        return ((a == other.a) && (b == other.b) && (c == other.c));
+    }
+
     int a;
     int b;
     char c;
-} newType;
+};
 
-int main()
+int Vector_main()
 {
     try
     {
@@ -43,26 +54,31 @@ int main()
         TestAtConst();
         TestAdd();
         TestInsert();
-        TestRemove();
+        TestRemoveAt();
+        TestRemoveObj();
+        TestDelete();
         TestReserve();
         TestTruncate();
         TestShrink();
         TestClean();
         TestReset();
+        TestConstFind();
+        TestNonConstFind();
+        TestIsExisting();
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-    catch(char const* e)
+    catch (...)
     {
-        std::cerr << e << '\n';
+        std::cerr << "Unknown exception" << '\n';
     }
 
     return 0;
 }
 
-void TestAssignmentOperator()
+static void TestAssignmentOperator()
 {
     Vector<newType> v1(11);
 
@@ -91,7 +107,7 @@ void TestAssignmentOperator()
     TEST(11 == v2.GetCapacity());
 }
 
-void TestIsEmpty()
+static void TestIsEmpty()
 {
     Vector<newType> v1;
 
@@ -101,7 +117,7 @@ void TestIsEmpty()
     TEST(0 == v1.IsEmpty());
 }
 
-void TestGetSize()
+static void TestGetSize()
 {
     Vector<newType> v1;
 
@@ -116,7 +132,7 @@ void TestGetSize()
     TEST(3 == v1.GetSize());
 }
 
-void TestGetCapacity()
+static void TestGetCapacity()
 {
     Vector<newType> v1;
 
@@ -127,7 +143,7 @@ void TestGetCapacity()
     TEST(20 == v2.GetCapacity());
 }
 
-void TestParenthesesOperator()
+static void TestParenthesesOperator()
 {
     Vector<newType> v1;
     newType i1 = {1, 2, '1'};
@@ -146,7 +162,7 @@ void TestParenthesesOperator()
     TRY(v1[22] = i2);
 }
 
-void TestParenthesesOperatorConst()
+static void TestParenthesesOperatorConst()
 {
     Vector<newType> v1;
     newType i1 = {1, 2, '1'};
@@ -162,7 +178,7 @@ void TestParenthesesOperatorConst()
     TEST(i1.c == v2[0].c);
 }
 
-void TestAt()
+static void TestAt()
 {
     Vector<newType> v1;
 
@@ -177,11 +193,14 @@ void TestAt()
     TEST(i2.a == v1.At(0).a);
     TEST(i2.b == v1.At(0).b);
     TEST(i2.c == v1.At(0).c);
+    TEST(i2.a == i1.a);
+    TEST(i2.b == i1.b);
+    TEST(i2.c == i1.c);
 
     TRY(v1.At(22) = i2);
 }
 
-void TestAtConst()
+static void TestAtConst()
 {
     Vector<newType> v1;
     newType i1 = {1, 2, '1'};
@@ -197,7 +216,7 @@ void TestAtConst()
     TEST(i1.c == v2.At(0).c);
 }
 
-void TestAdd()
+static void TestAdd()
 {
     Vector<newType> v1;
     newType i1 = {1, 2, '1'};
@@ -217,7 +236,7 @@ void TestAdd()
     TEST(i2.c == v1[1].c);
 }
 
-void TestInsert()
+static void TestInsert()
 {
     Vector<newType> v1;
     newType i1 = {1111, 1, 'a'},
@@ -295,7 +314,7 @@ void TestInsert()
     TEST(i2.c == v1[4].c);
 }
 
-void TestRemove()
+static void TestRemoveAt()
 {
     Vector<newType> v1;
 
@@ -378,7 +397,85 @@ void TestRemove()
     TRY(v1.Remove(22));
 }
 
-void TestReserve()
+static void TestRemoveObj()
+{
+    Vector<newType> v1;
+
+    newType i1 = { 1, 2, '1' };
+    v1.Add(i1);
+    TEST(&i1 == &v1[0]);
+
+    newType i2 = { 11, 12, '2' };
+    v1.Add(i2);
+    TEST(&i1 == &v1[0]);
+    TEST(&i2 == &v1[1]);
+
+    newType i3 = { 3, 4, 'a' };
+    v1.At(0) = i3;
+    TEST(i1 == i3);
+    TEST(&i1 == &v1[0]);
+    TEST(&i2 == &v1[1]);
+
+    v1.Add(i3);
+    TEST(&i1 == &v1[0]);
+    TEST(&i2 == &v1[1]);
+    TEST(&i3 == &v1[2]);
+    TEST(v1.Remove(i2));
+    TEST(&i1 == &v1[0]);
+    TEST(&i3 == &v1[1]);
+
+    newType i4 = { 4, 42, 'd' };
+    v1.Add(i4);
+    TEST(&i1 == &v1[0]);
+    TEST(&i3 == &v1[1]);
+    TEST(&i4 == &v1[2]);
+
+    newType i5 = { 5, 52, 'e' };
+    v1.Add(i5);
+    TEST(&i1 == &v1[0]);
+    TEST(&i3 == &v1[1]);
+    TEST(&i4 == &v1[2]);
+    TEST(&i5 == &v1[3]);
+
+    v1.Remove(i4);
+    TEST(&i1 == &v1[0]);
+    TEST(&i3 == &v1[1]);
+    TEST(&i5 == &v1[2]);
+
+    newType i6 = { 6, 66, 'g' };
+    TEST(false == v1.Remove(i6));
+    TEST(false == v1.Remove(i2));
+    TEST(false == v1.Remove(i4));
+}
+
+static void TestDelete()
+{
+    Vector<newType> v1;
+
+    newType* i1 = new newType;
+    *i1 = { 1, 2, '1' };
+    v1.Add(*i1);
+    TEST(i1 == &v1[0]);
+
+    newType* i2 = new newType;
+    *i2 = { 11, 12, '2' };
+    v1.Add(*i2);
+    TEST(i1 == &v1[0]);
+    TEST(i2 == &v1[1]);
+
+    newType* i3 = new newType;
+    *i3 = { 3, 4, 'a' };
+    v1.Add(*i3);
+    TEST(i1 == &v1[0]);
+    TEST(i2 == &v1[1]);
+    TEST(i3 == &v1[2]);
+
+    TEST(v1.Delete(*i2));
+    TEST(i1 == &v1[0]);
+    TEST(i3 == &v1[1]);
+}
+
+static void TestReserve()
 {
     Vector<newType> v1;
 
@@ -418,7 +515,7 @@ void TestReserve()
     TEST(12 == v1.GetCapacity());
 }
 
-void TestTruncate()
+static void TestTruncate()
 {
     Vector<newType> v1(12);
 
@@ -490,7 +587,7 @@ void TestTruncate()
     TEST(12 == v1.GetCapacity());
 }
 
-void TestShrink()
+static void TestShrink()
 {
     Vector<newType> v1;
 
@@ -542,7 +639,7 @@ void TestShrink()
     TEST(i5.c == v1.At(4).c);
 }
 
-void TestClean()
+static void TestClean()
 {
     Vector<newType> v1(15);
     
@@ -581,7 +678,7 @@ void TestClean()
     TRY(v1[0].a = 10);
 }
 
-void TestReset()
+static void TestReset()
 {
     Vector<newType> v1(5);
     
@@ -659,4 +756,59 @@ void TestReset()
     TEST(1 == v1.IsEmpty());
     TEST(0 == v1.GetSize());
     TEST(5 == v1.GetCapacity());
+}
+
+static void TestConstFind()
+{
+    Vector<newType> v1(10);
+    newType arr[10];
+
+    for(int i = 0; i < 10; ++i)
+    {
+        arr[i] = { i, i * 10, 'a' };
+    }
+
+    for(int i = 0; i < 10; ++i)
+    {
+        v1.Add(arr[i]);
+    }
+
+    const Vector<newType> v2(v1);
+    
+    for(int i = 0; i < 10; ++i)
+    {
+        TEST((&arr[i] == v2.Find(arr[i])));
+    }
+}
+
+static void TestNonConstFind()
+{
+    Vector<newType> v1(10);
+    newType arr[10];
+
+    for (int i = 0; i < 10; ++i)
+    {
+        arr[i] = { i, i * 10, 'a' };
+    }
+
+    for (int i = 0; i < 10; ++i)
+    {
+        v1.Add(arr[i]);
+    }
+
+    for (int i = 0; i < 10; ++i)
+    {
+        TEST((&arr[i] == v1.Find(arr[i])));
+    }
+}
+
+static void TestIsExisting()
+{
+    Vector<newType> v1(10);
+    newType i1 = { 1, 11, 'a' };
+
+    TEST(false == v1.IsExisting(i1));
+    v1.Add(i1);
+    TEST(true == v1.IsExisting(i1));
+
 }

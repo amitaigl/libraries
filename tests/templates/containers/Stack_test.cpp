@@ -5,7 +5,7 @@
 
 using namespace AG;
 
-int main()
+static void Test()
 {
     Stack<int, std::deque<int>> s1;
 
@@ -47,6 +47,11 @@ int main()
     // Test for cctor:
     Stack<int> s4(s3);
     TEST(8 == s3.top());
+}
+
+int Stack_main()
+{
+    Test();
 
     return 0;
 }

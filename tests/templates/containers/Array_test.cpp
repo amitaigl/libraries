@@ -3,24 +3,28 @@
 
 using namespace AG;
 
-void TestAssignmentOperator();
-void TestIsEmpty();
-void TestGetSize();
-void TestGetCapacity();
-void TestParenthesesOperator();
-void TestParenthesesOperatorConst();
-void TestAt();
-void TestAtConst();
-void TestAdd();
-void TestInsert();
-void TestRemove();
-void TestReserve();
-void TestTruncate();
-void TestShrink();
-void TestClean();
-void TestReset();
+static void TestAssignmentOperator();
+static void TestIsEmpty();
+static void TestGetSize();
+static void TestGetCapacity();
+static void TestParenthesesOperator();
+static void TestParenthesesOperatorConst();
+static void TestAt();
+static void TestAtConst();
+static void TestAdd();
+static void TestInsert();
+static void TestRemoveAt();
+static void TestRemoveObj();
+static void TestReserve();
+static void TestTruncate();
+static void TestShrink();
+static void TestClean();
+static void TestReset();
+static void TestConstFind();
+static void TestNonConstFind();
+static void TestIsExisting();
 
-int main()
+int Array_main()
 {
     try
     {
@@ -34,18 +38,22 @@ int main()
         TestAtConst();
         TestAdd();
         TestInsert();
-        TestRemove();
+        TestRemoveAt();
+        TestRemoveObj();
         TestReserve();
         TestTruncate();
         TestShrink();
         TestClean();
         TestReset();
+        TestConstFind();
+        TestNonConstFind();
+        TestIsExisting();
     }
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-    catch(char const* e)
+    catch(const char* e)
     {
         std::cerr << e << '\n';
     }
@@ -53,7 +61,7 @@ int main()
     return 0;
 }
 
-void TestAssignmentOperator()
+static void TestAssignmentOperator()
 {
     Array<int> a1(11);
 
@@ -84,7 +92,7 @@ void TestAssignmentOperator()
     TEST(11 == a2.GetCapacity());
 }
 
-void TestIsEmpty()
+static void TestIsEmpty()
 {
     Array<int> a1;
 
@@ -94,7 +102,7 @@ void TestIsEmpty()
     TEST(0 == a1.IsEmpty());
 }
 
-void TestGetSize()
+static void TestGetSize()
 {
     Array<int> a1;
 
@@ -105,11 +113,12 @@ void TestGetSize()
     a1.Add(i1);
     a1.Add(i1);
     TEST(4 == a1.GetSize());
-    a1.Remove(3);
+    a1.RemoveAt(3);
+    //TRY(1 == a1.Remove(3));
     TEST(3 == a1.GetSize());
 }
 
-void TestGetCapacity()
+static void TestGetCapacity()
 {
     Array<int> a1;
 
@@ -120,7 +129,7 @@ void TestGetCapacity()
     TEST(20 == a2.GetCapacity());
 }
 
-void TestParenthesesOperator()
+static void TestParenthesesOperator()
 {
     Array<int> a1;
     int i1 = 1;
@@ -135,7 +144,7 @@ void TestParenthesesOperator()
     TRY(a1[22] = i2);
 }
 
-void TestParenthesesOperatorConst()
+static void TestParenthesesOperatorConst()
 {
     Array<int> a1;
     int i1 = 1;
@@ -147,7 +156,7 @@ void TestParenthesesOperatorConst()
     TEST(i1 == a2[0]);
 }
 
-void TestAt()
+static void TestAt()
 {
     Array<int> a1;
 
@@ -162,7 +171,7 @@ void TestAt()
     TRY((a1.At(22) = i2));
 }
 
-void TestAtConst()
+static void TestAtConst()
 {
     Array<int> a1;
     int i1 = 1;
@@ -174,7 +183,7 @@ void TestAtConst()
     TEST(i1 == a2.At(0));
 }
 
-void TestAdd()
+static void TestAdd()
 {
     Array<int> a1;
     int i1 = 1;
@@ -193,7 +202,7 @@ void TestAdd()
     TEST(98 == a1[2]);
 }
 
-void TestInsert()
+static void TestInsert()
 {
     Array<int> a1;
     int i1 = 1111, i2 = 22, i3 = 333, i4 = 4;
@@ -235,7 +244,7 @@ void TestInsert()
     TEST(99 == a1[5]);
 }
 
-void TestRemove()
+static void TestRemoveAt()
 {
     Array<int> a1;
 
@@ -253,7 +262,7 @@ void TestRemove()
     TEST(i3 == a1[0]);
     TEST(i2 == a1[1]);
 
-    a1.Remove(0);
+    a1.RemoveAt(0);
     TEST(i2 == a1[0]);
 
     a1.Add(i3);
@@ -273,15 +282,62 @@ void TestRemove()
     TEST(i4 == a1[2]);
     TEST(i5 == a1[3]);
 
-    a1.Remove(2);
+    a1.RemoveAt(2);
     TEST(i2 == a1[0]);
     TEST(i3 == a1[1]);
     TEST(i5 == a1[2]);
 
-    TRY(a1.Remove(22));
+    TRY(a1.RemoveAt(22));
 }
 
-void TestReserve()
+static void TestRemoveObj()
+{
+    Array<int> a1;
+
+    int i1 = 11;
+    a1.Add(i1);
+    TEST(i1 == a1[0]);
+
+    int i2 = 22;
+    a1.Add(i2);
+    TEST(i1 == a1[0]);
+    TEST(i2 == a1[1]);
+
+    int i3 = 33;
+    a1.At(0) = i3;
+    TEST(i3 == a1[0]);
+    TEST(i2 == a1[1]);
+
+    a1.RemoveObj(i3);
+    TEST(i2 == a1[0]);
+
+    a1.Add(i3);
+    TEST(i2 == a1[0]);
+    TEST(i3 == a1[1]);
+
+    int i4 = 44;
+    a1.Add(i4);
+    TEST(i2 == a1[0]);
+    TEST(i3 == a1[1]);
+    TEST(i4 == a1[2]);
+
+    int i5 = 55;
+    a1.Add(i5);
+    TEST(i2 == a1[0]);
+    TEST(i3 == a1[1]);
+    TEST(i4 == a1[2]);
+    TEST(i5 == a1[3]);
+
+    a1.RemoveObj(i4);
+    TEST(i2 == a1[0]);
+    TEST(i3 == a1[1]);
+    TEST(i5 == a1[2]);
+
+    int i6 = 66;
+    TEST(false == a1.RemoveObj(i6));
+}
+
+static void TestReserve()
 {
     Array<int> a1;
 
@@ -306,7 +362,7 @@ void TestReserve()
     TEST(12 == a1.GetCapacity());
 }
 
-void TestTruncate()
+static void TestTruncate()
 {
     Array<int> a1(12);
 
@@ -353,7 +409,7 @@ void TestTruncate()
     TEST(12 == a1.GetCapacity());
 }
 
-void TestShrink()
+static void TestShrink()
 {
     Array<int> a1;
 
@@ -379,7 +435,7 @@ void TestShrink()
     TEST(555 == a1.At(4));
 }
 
-void TestClean()
+static void TestClean()
 {
     Array<char> a1(15);
     
@@ -403,7 +459,7 @@ void TestClean()
     TEST(0 == a1.GetSize());
 }
 
-void TestReset()
+static void TestReset()
 {
     Array<double> a1(5);
     
@@ -453,4 +509,62 @@ void TestReset()
     TEST(1 == a1.IsEmpty());
     TEST(0 == a1.GetSize());
     TEST(5 == a1.GetCapacity());
+}
+
+static void TestConstFind()
+{
+    Array<int> a1(6);
+    const int element_0 = 0, element_1 = 1, element_2 = 2, element_3 = 3, element_4 = 4, extern_4 = 4, extern_5 = 5;
+
+    a1.Add(element_0);
+    a1.Add(element_1);
+    a1.Add(element_2);
+    a1.Add(element_3);
+    a1.Add(element_4);
+
+    const Array<int> a2(a1);
+
+    TEST((element_0 == *a2.Find(element_0)));
+    TEST((element_1 == *a2.Find(element_1)));
+    TEST((element_2 == *a2.Find(element_2)));
+    TEST((element_3 == *a2.Find(element_3)));
+    TEST((element_4 == *a2.Find(element_4)));
+    TEST(!a2.Find(extern_5));
+    TEST(a2.Find(extern_4));
+}
+
+static void TestNonConstFind()
+{
+    Array<int> a1(6);
+    int element_0 = 0, element_1 = 1, element_2 = 2, element_3 = 3, element_4 = 4, extern_4 = 4, extern_5 = 5;
+
+    a1.Add(element_0);
+    a1.Add(element_1);
+    a1.Add(element_2);
+    a1.Add(element_3);
+    a1.Add(element_4);
+
+    TEST((element_0 == *a1.Find(element_0)));
+    TEST((element_1 == *a1.Find(element_1)));
+    TEST((element_2 == *a1.Find(element_2)));
+    TEST((element_3 == *a1.Find(element_3)));
+    TEST((element_4 == *a1.Find(element_4)));
+    TEST(!a1.Find(extern_5));
+    TEST(a1.Find(extern_4));
+}
+
+static void TestIsExisting()
+{
+    Array<int> a1(6);
+    int iExist0 = 0, iExist1 = 1, iExist2 = 2, i3 = 3, i4 = 4;
+
+    a1.Add(iExist0);
+    a1.Add(iExist1);
+    a1.Add(iExist2);
+
+    TEST(a1.IsExisting(iExist2));
+    TEST(a1.IsExisting(iExist1));
+    TEST(a1.IsExisting(iExist0));
+    TEST(!a1.IsExisting(i3));
+    TEST(!a1.IsExisting(i4));
 }
